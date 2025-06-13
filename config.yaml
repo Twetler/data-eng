@@ -1,0 +1,14 @@
+# Example configuration file
+
+cities:
+  - name: Antwerpen
+    centre: [4.421, 51.221]
+    radius: 1000
+
+logging:
+  level: INFO
+  file: logs/app.log
+
+api:
+  endpoint: https://api.example.com
+  token: your_api_token_here
