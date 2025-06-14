@@ -1,6 +1,9 @@
 from src.spatial import RectanglePolygonIterator
+from src.utils import load_config_yaml
 import logging as log
 import matplotlib.pyplot as plt
+import webbrowser
+import folium
 
 log.basicConfig(level=log.INFO)
 
@@ -40,3 +43,23 @@ def test_polygon_iterator(mini_rects: int = 8):
     log.info("Polygon Iterator test ended")
     return True
         
+def city_bounding_boxes():
+    config: dict = load_config_yaml("config.yaml")
+    # Center the map on the first city
+    first_city: dict = config['cities'][0]
+    center: tuple[float] = first_city['rectangle_coords'][0]
+
+    m = folium.Map(location=center, zoom_start=10)
+
+    for city in config['cities']:
+        folium.Polygon(
+            locations=city['rectangle_coords'],
+            popup=city['name'],
+            color='blue',
+            fill=True,
+            fill_opacity=0.2
+        ).add_to(m)
+
+    # Save and open the map
+    m.save('city_polygons_map.html')
+    webbrowser.open('city_polygons_map.html')
