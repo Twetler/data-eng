@@ -3,6 +3,7 @@ import json
 import numpy as np
 
 def fetch_places_api(
+        save_path: str,
         api_key: str,
         polygon: list[tuple[float]],
         categories: list[str] = []
@@ -12,25 +13,22 @@ def fetch_places_api(
 
         See: https://docs.foursquare.com/developer/reference/place-search
     """
-    
     base_url = "https://api.foursquare.com/v3/places/search"
-
     header = {
         "accept" : "application/json",
         "Authorization" : api_key
     }
-
     # Params init
     params = {
-        "polygon" : format_foursquare_polygon(polygon),
+        "polygon" : format_fsq_polygon(polygon),
         "categories" : categories
     }
-
     response = requests.get(base_url, headers = header, params = params)
 
     # Status check
     if response.status_code == 200:
-        return json.loads(response.content)
+        with open(save_path, "w") as f:
+            f.write(response.text)
     else:
         response.raise_for_status()
 

@@ -88,10 +88,14 @@ def get_places():
     config: dict = load_config_yaml("config.yaml")
     first_city: dict = config['cities'][0]
     center: tuple[float] = first_city['rectangle_coords'][0]
+    city_name: str = first_city['name'].lower()
+    poly_idx: int = 0
     for poly in RectanglePolygonIterator(rect_points=first_city['rectangle_coords'], n_polygons=49):
-        places_raw: dict = fetch_places_api(FOURSQUARE_KEY, polygon = poly)
+        file_path = f"tmp/{city_name}-poly-{poly_idx}.json"
+        places_raw: dict = fetch_places_api(file_path, FOURSQUARE_KEY, polygon = poly)
         # We just want one request
-        break 
+        poly_idx += 1
+        break
     return places_raw
 
 

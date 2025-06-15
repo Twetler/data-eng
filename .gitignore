@@ -21,3 +21,4 @@ __pycache__/
 *.dist-info/
 # Python distribution info directories
 # Distribution directories
+tmp/*
