@@ -1,11 +1,17 @@
 from src.spatial import RectanglePolygonIterator
+from src.api import fetch_places_api
 from src.utils import load_config_yaml
 import logging as log
 import matplotlib.pyplot as plt
 import webbrowser
 import folium
+import os
+
+from dotenv import load_dotenv
 
 log.basicConfig(level=log.INFO)
+load_dotenv()
+FOURSQUARE_KEY: str = os.getenv("FOURSQUARE_API_KEY")
 
 
 
@@ -44,6 +50,7 @@ def test_polygon_iterator(mini_rects: int = 8):
     return True
         
 def city_bounding_boxes():
+
     config: dict = load_config_yaml("config.yaml")
     # Center the map on the first city
     first_city: dict = config['cities'][0]
@@ -52,6 +59,7 @@ def city_bounding_boxes():
     m = folium.Map(location=center, zoom_start=10)
 
     for city in config['cities']:
+        # Draws city boundaries
         folium.Polygon(
             locations=city['rectangle_coords'],
             popup=city['name'],
@@ -59,7 +67,35 @@ def city_bounding_boxes():
             fill=True,
             fill_opacity=0.2
         ).add_to(m)
+        # Inside this city we also want to draw the mini boxes
+        for poly in RectanglePolygonIterator(
+            rect_points=city['rectangle_coords'],
+            n_polygons = 64):
+
+            folium.Polygon(
+                locations = poly,
+                popup=str(poly),
+                color = 'red',
+                fill = True,
+                fill_opacity = 0.1
+            ).add_to(m)
 
     # Save and open the map
     m.save('city_polygons_map.html')
     webbrowser.open('city_polygons_map.html')
+
+def get_places():
+    config: dict = load_config_yaml("config.yaml")
+    first_city: dict = config['cities'][0]
+    center: tuple[float] = first_city['rectangle_coords'][0]
+    for poly in RectanglePolygonIterator(rect_points=first_city['rectangle_coords'], n_polygons=49):
+        places_raw: dict = fetch_places_api(FOURSQUARE_KEY, polygon = poly)
+        # We just want one request
+        break 
+    return places_raw
+
+
+
+
+
+    
