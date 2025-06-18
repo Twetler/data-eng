@@ -5,23 +5,18 @@ class RectanglePolygonIterator:
     """
     Iterator that yields smaller rectangles (as 4 lat/lon points: SW, SE, NE, NW)
     inside a big axis-aligned rectangle, dividing it into a grid of polygons.
-    Args:
-        rect_points: List of 4 points [SW, SE, NE, NW], each [lat, lon]
-        n_polygons: Number of polygons (rectangles) along each axis (rows, cols) or total
-                    If int, will create a grid as close to square as possible.
-                    If tuple (n_rows, n_cols), will use those.
     """
     def __init__(self, rect_points: list[tuple[float]], n_polygons: int):
         assert len(rect_points) == 4, "Rectangle must have 4 points [SW, SE, NE, NW], in this order"
         self.rect_points = rect_points
 
-        if isinstance(n_polygons, int):
-            n_rows = int(np.sqrt(n_polygons))
-            n_cols = int(np.ceil(n_polygons / n_rows))
-            self.n_rows = n_rows
-            self.n_cols = n_cols
-        else:
-            self.n_rows, self.n_cols = n_polygons
+        assert isinstance(n_polygons, int), "Hmm, that's not int" 
+        
+        n_rows: int = int(np.sqrt(n_polygons))
+        n_cols: int = int(np.ceil(n_polygons / n_rows))
+        self.n_rows: int = n_rows
+        self.n_cols: int = n_cols
+
 
         self._setup_grid()
 
