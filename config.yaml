@@ -1,14 +1,20 @@
-# Example configuration file
-
 cities:
   - name: Antwerpen
-    centre: [4.421, 51.221]
-    radius: 1000
+    rectangle_coords:
+      - [51.1800, 4.3500]
+      - [51.1800, 4.5000]
+      - [51.2600, 4.5000]
+      - [51.2600, 4.3500]
+
+  - name: lisbon
+    rectangle_coords:
+      - [38.6900, -9.2300]
+      - [38.6900, -9.0800]
+      - [38.8300, -9.0800]
+      - [38.8300, -9.2300]
 
 logging:
   level: INFO
   file: logs/app.log
 
-api:
-  endpoint: https://api.example.com
-  token: your_api_token_here
+  

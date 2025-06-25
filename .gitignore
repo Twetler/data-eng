@@ -2,3 +2,23 @@
 env/*
 .env
 # Local env files
+__pycache__/
+# Python cache files
+*.py[cod]
+# Compiled Python files
+*.pyo
+# Compiled Python files
+*.pyd
+# Compiled Python files
+*.pdb
+# Python debug files
+*.egg
+# Python egg files
+*.egg-info/
+# Python egg info directories
+*.whl
+# Python wheel files
+*.dist-info/
+# Python distribution info directories
+# Distribution directories
+tmp/*
