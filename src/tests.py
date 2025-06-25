@@ -1,6 +1,7 @@
 from src.spatial import RectanglePolygonIterator
 from src.api import fetch_places_api
 from src.utils import load_config_yaml
+from src.gcp import upload_blob
 import logging as log
 import matplotlib.pyplot as plt
 import webbrowser
@@ -11,7 +12,9 @@ from dotenv import load_dotenv
 
 log.basicConfig(level=log.INFO)
 load_dotenv()
+
 FOURSQUARE_KEY: str = os.getenv("FOURSQUARE_API_KEY")
+BUCKET_NAME: str = os.getenv("GOOGLE_CLOUD_BUCKET")
 
 
 
@@ -84,18 +87,20 @@ def city_bounding_boxes():
     m.save('city_polygons_map.html')
     webbrowser.open('city_polygons_map.html')
 
-def get_places():
+def get_places() -> dict:
     config: dict = load_config_yaml("config.yaml")
     first_city: dict = config['cities'][0]
-    center: tuple[float] = first_city['rectangle_coords'][0]
     city_name: str = first_city['name'].lower()
     poly_idx: int = 0
-    for poly in RectanglePolygonIterator(rect_points=first_city['rectangle_coords'], n_polygons=49):
-        file_path = f"tmp/{city_name}-poly-{poly_idx}.json"
+    for poly in RectanglePolygonIterator(rect_points=first_city['rectangle_coords'], n_polygons=4):
+        log.info(f"Fetching Polygon : {poly_idx}")
+        file_path: str = f"tmp/{city_name}-poly-{poly_idx}.json"
         places_raw: dict = fetch_places_api(file_path, FOURSQUARE_KEY, polygon = poly)
-        # We just want one request
+        destination_path: str = os.path.join(
+            city_name, f"{city_name}-poly-{poly_idx}.json"
+        )
+        upload_blob(BUCKET_NAME, file_path, destination_path)
         poly_idx += 1
-        break
     return places_raw
 
 

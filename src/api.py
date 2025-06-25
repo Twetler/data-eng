@@ -1,6 +1,8 @@
 import requests
-import json
 import numpy as np
+
+import logging
+logging.basicConfig(level=logging.INFO)
 
 def fetch_places_api(
         save_path: str,
