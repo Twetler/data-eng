@@ -8,6 +8,7 @@ def fetch_places_api(
         save_path: str,
         api_key: str,
         polygon: list[tuple[float]],
+        fields: list[str],
         categories: list[str] = []
     ):
     """
