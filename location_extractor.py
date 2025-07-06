@@ -41,10 +41,6 @@ def mine_fsq_places():
 
         samples.append(results)
 
-
-        destination_path: str = os.path.join(
-            city_name, f"{city_name}-poly-{poly_idx}.json"
-        )
         #upload_blob(BUCKET_NAME, file_path, destination_path)
         poly_idx += 1
     return True
