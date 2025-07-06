@@ -9,7 +9,8 @@ def fetch_places_api(
         api_key: str,
         polygon: list[tuple[float]],
         fields: list[str],
-        categories: list[str] = []
+        categories: list[str] = [],
+        limit: int = 50
     ):
     """
         Fetch places from Foursquare Places API by lat, long, and categories.
@@ -24,7 +25,8 @@ def fetch_places_api(
     # Params init
     params = {
         "polygon" : format_fsq_polygon(polygon),
-        "categories" : categories
+        "categories" : categories,
+        "limit" : limit
     }
     response = requests.get(base_url, headers = header, params = params)
 

@@ -22,3 +22,6 @@ __pycache__/
 # Python distribution info directories
 # Distribution directories
 tmp/*
+
+.ipynb_checkpoints/*
+jupyter/.ipynb_checkpoints/get_places-checkpoint.ipynb

@@ -95,15 +95,17 @@ def get_places() -> dict:
     for poly in RectanglePolygonIterator(rect_points=first_city['rectangle_coords'], n_polygons=4):
         log.info(f"Fetching Polygon : {poly_idx}")
         file_path: str = f"tmp/{city_name}-poly-{poly_idx}.json"
-        places_raw: dict = fetch_places_api(file_path, FOURSQUARE_KEY, polygon = poly, fields = [
-            "description", "website", "social_media", "hours", "hours_popular", "rating",
-            "popularity", "price", "date_closed", "features", "venue_reality_bucket",
-            "geocodes", "fsq_id", "name"
-        ])
+        places_raw: dict = fetch_places_api(file_path, FOURSQUARE_KEY, polygon = poly,
+            fields = [
+                "description", "website", "social_media", "hours", "hours_popular", "rating",
+                "popularity", "price", "date_closed", "features", "venue_reality_bucket",
+                "geocodes", "fsq_id", "name"
+            ])
+
         destination_path: str = os.path.join(
             city_name, f"{city_name}-poly-{poly_idx}.json"
         )
-        upload_blob(BUCKET_NAME, file_path, destination_path)
+        #upload_blob(BUCKET_NAME, file_path, destination_path)
         poly_idx += 1
     return places_raw
 
