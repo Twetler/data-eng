@@ -1,9 +1,10 @@
 import os
 import numpy as np
 from dotenv import load_dotenv
-from src.utils import load_config_yaml, unpack_results
+from src.utils import load_config_yaml, unpack_results, load_tmp_data, get_places_etl
 from src.spatial import RectanglePolygonIterator
 from src.api import fetch_places_api
+
 
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -44,6 +45,8 @@ def mine_fsq_places():
         poly_idx += 1
     return True
 
-mine_fsq_places()
+#mine_fsq_places()
 
+df = load_tmp_data()
+df = get_places_etl(df)
 
