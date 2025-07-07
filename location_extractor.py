@@ -1,5 +1,4 @@
 import os
-import folium
 import numpy as np
 from dotenv import load_dotenv
 from src.utils import load_config_yaml, unpack_results
@@ -27,7 +26,7 @@ def mine_fsq_places():
             fields = [
                 "description", "website", "social_media", "hours", "hours_popular", "rating"
                 , "price", "date_closed", "features", "venue_reality_bucket",
-                "geocodes", "fsq_id", "name"
+                "geocodes", "fsq_id", "name", "categories","location"
             ])
         results = unpack_results(file_path)
 

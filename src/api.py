@@ -26,7 +26,8 @@ def fetch_places_api(
     params = {
         "polygon" : format_fsq_polygon(polygon),
         "categories" : categories,
-        "limit" : limit
+        "limit" : limit,
+        "fields" : ",".join(fields)
     }
     response = requests.get(base_url, headers = header, params = params)
 
