@@ -118,7 +118,7 @@ def get_places_etl(df: pd.DataFrame) -> pd.DataFrame:
     df.loc[:, "facebook_id"] = df.social_media.apply(lambda obj: unpack_social_media(obj, "facebook"))
     df.loc[:, "instagram"] = df.social_media.apply(lambda obj: unpack_social_media(obj, "instagram"))      
     df.loc[:, "twitter"] = df.social_media.apply(lambda obj: unpack_social_media(obj, "twitter"))
-    df.drop(columns = ['social_media'], inplace = True)
+    df.drop(columns = ['social_media', 'hours'], inplace = True)
 
     # Enforces column types
     df = convert_columns(df)

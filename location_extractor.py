@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from src.utils import load_config_yaml, unpack_results, load_tmp_data, get_places_etl
 from src.spatial import RectanglePolygonIterator
 from src.api import fetch_places_api
+from pandas_gbq import to_gbq
 
 
 import logging
@@ -47,6 +48,8 @@ def mine_fsq_places():
 
 #mine_fsq_places()
 
-df = load_tmp_data()
+df = load_tmp_data("tmp/")
 df = get_places_etl(df)
+to_gbq(df, "cloud-eng-1.fsq_places.fsq_places")
 
+    
