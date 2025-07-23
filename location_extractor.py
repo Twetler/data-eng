@@ -4,7 +4,9 @@ from dotenv import load_dotenv
 from src.utils import load_config_yaml, unpack_results, load_tmp_data, get_places_etl
 from src.spatial import RectanglePolygonIterator
 from src.api import fetch_places_api
+from src.gcp import upload_blob
 from pandas_gbq import to_gbq
+from pandas import DataFrame
 
 
 import logging
@@ -46,10 +48,40 @@ def mine_fsq_places():
         poly_idx += 1
     return True
 
-#mine_fsq_places()
 
-df = load_tmp_data("tmp/")
-df = get_places_etl(df)
-to_gbq(df, "cloud-eng-1.fsq_places.fsq_places")
+def run_tables(debug_mode: bool = True):
+    logging.info("Starting location extractor...")
+    if debug_mode: 
+        logging.info("Debug Mode is ON, using /tmp existing files")
+    else:
+        mine_fsq_places()
+    df: DataFrame  = load_tmp_data("tmp/")
+    df = get_places_etl(df)
+    to_gbq(df, CONFIG['raw_table_destination'])
+
+def upload_raw():
+    destination_bucket: str = os.getenv("GOOGLE_CLOUD_BUCKET")
+    tmp_path: str = "tmp/"
+
+    for _,_, files in os.walk(tmp_path):
+        for file in files:
+            if not os.path.isdir(file):
+                logging.info(f"Sending {file} to bucket...")
+                fullpath: str = os.path.join(tmp_path, file)
+                city_name : str = fullpath.split("/")[-1].split("-")[0]
+                bucket_destination: str = os.path.join(city_name, file)
+                upload_blob(
+                    bucket_name = destination_bucket,
+                    source_file_name = fullpath,
+                    destination_blob_name = bucket_destination
+                )
+    return True
+
+mine_fsq_places()
+
+run_tables()
+
+upload_raw()
+
 
     

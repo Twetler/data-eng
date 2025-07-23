@@ -1,3 +1,4 @@
+raw_table_destination: cloud-eng-1.fsq_places.fsq_places
 cities:
   - name: antwerp
     rectangle_coords:
