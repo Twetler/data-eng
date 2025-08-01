@@ -14,7 +14,7 @@ def unpack_results(filepath: str) -> list:
         loaded_var: dict = json.load(f)
         results: list[dict] = loaded_var["results"]
         if len(results) >= 50:
-            raise Exception(f"Maximum limit of 50 reached, you may be losing data: {len(results)}")
+            print(f"Maximum limit of 50 reached, you may be losing data: {len(results)}")
     return results
 
 def load_tmp_data(path: str) -> pd.DataFrame:

@@ -17,38 +17,42 @@ load_dotenv()
 FOURSQUARE_KEY: str = os.getenv("FOURSQUARE_API_KEY")
 CONFIG: dict = load_config_yaml("config.yaml")
 
+# Produces the json files
 def mine_fsq_places():
     first_city: dict = CONFIG['cities'][0]
     city_name: str = first_city['name'].lower()
-    poly_idx: int = 0
     samples: list = list()
     batches_len: list[int] = list()
-    for poly in RectanglePolygonIterator(rect_points=first_city['rectangle_coords'], n_polygons=64):
-        logging.info(f"Fetching Polygon : {poly_idx}")
-        file_path: str = f"tmp/{city_name}-poly-{poly_idx}.json"
-        fetch_places_api(file_path, FOURSQUARE_KEY, polygon = poly,
-            fields = [
-                "description", "website", "social_media", "hours", "hours_popular", "rating"
-                , "price", "date_closed", "features", "venue_reality_bucket",
-                "geocodes", "fsq_id", "name", "categories","location"
-            ])
-        results = unpack_results(file_path)
+    for city in CONFIG['cities']:
+        city_name: str = city['name'].lower()
+        logging.info(f"Starting city: {city_name}")
+        poly_idx: int = 0
+        for poly in RectanglePolygonIterator(rect_points=city['rectangle_coords'], n_polygons=64):
+            logging.info(f"Fetching Polygon : {poly_idx}")
+            file_path: str = f"tmp/{city_name}-poly-{poly_idx}.json"
+            fetch_places_api(file_path, FOURSQUARE_KEY, polygon = poly,
+                fields = [
+                    "description", "website", "social_media", "hours", "hours_popular", "rating"
+                    , "price", "date_closed", "features", "venue_reality_bucket",
+                    "geocodes", "fsq_id", "name", "categories","location"
+                ])
+            results = unpack_results(file_path)
 
-        len_batch = len(results)
-        logging.info(f"Batch len: {len_batch}")
+            len_batch = len(results)
+            logging.info(f"Batch len: {len_batch}")
 
-        batches_len.append(len_batch)
-        if len(batches_len) > 2:
-            mean = round(np.mean(batches_len), 3)
-            logging.info(f"Length average: {mean}")
+            batches_len.append(len_batch)
+            if len(batches_len) > 2:
+                mean = round(np.mean(batches_len), 3)
+                logging.info(f"Length average: {mean}")
 
-        samples.append(results)
+            samples.append(results)
 
-        #upload_blob(BUCKET_NAME, file_path, destination_path)
-        poly_idx += 1
+            #upload_blob(BUCKET_NAME, file_path, destination_path)
+            poly_idx += 1
     return True
 
-
+# This sends data do Google Cloud
 def run_tables(debug_mode: bool = True):
     logging.info("Starting location extractor...")
     if debug_mode: 
@@ -57,8 +61,9 @@ def run_tables(debug_mode: bool = True):
         mine_fsq_places()
     df: DataFrame  = load_tmp_data("tmp/")
     df = get_places_etl(df)
-    to_gbq(df, CONFIG['raw_table_destination'])
+    to_gbq(df, CONFIG['raw_table_destination'], if_exists = 'append')
 
+# Sends raw data to GCP Bucket which will be pulled by Databricks
 def upload_raw():
     destination_bucket: str = os.getenv("GOOGLE_CLOUD_BUCKET")
     tmp_path: str = "tmp/"
@@ -77,7 +82,8 @@ def upload_raw():
                 )
     return True
 
-mine_fsq_places()
+
+#mine_fsq_places()
 
 run_tables()
 
